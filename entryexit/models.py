@@ -16,4 +16,4 @@ class EntryExit(models.Model):
     building_id = models.CharField(max_length = 50)
 
     def __str__(self):
-        return self.entryno 
+        return self.id_name

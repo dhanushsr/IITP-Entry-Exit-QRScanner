@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,7 +29,6 @@ from entryexit import views as EntryExitViews
 router = routers.DefaultRouter()
 router.register(r'users', PeopleViews.UserViewSet)
 router.register(r'groups', PeopleViews.GroupViewSet)
-router.register(r'entries', EntryExitViews.EntriesViewSet)
 router.register(r'building', EntryExitViews.BuildingViewSet)
 
 # Wire up our API using automatic URL routing.
@@ -35,10 +36,18 @@ router.register(r'building', EntryExitViews.BuildingViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/login', PeopleViews.login),
-    url(r'^people/$', PeopleViews.PeopleList.as_view(), name = 'peoplelist'),
-    url(r'^people/(?P<pk>\w+)/$', PeopleViews.PeopleDetail.as_view(), name = 'people_detail'),
-    url(r'^entryexit/$', EntryExitViews.EntriesList.as_view(), name = 'entryexitlist'),
-    url(r'^entryexit/(?P<pk>\d+)/$', EntryExitViews.EntriesDetail.as_view(), name = 'entryexit_detail'),
-]
+
+    url(r'^people/$', PeopleViews.PeopleListAPIView.as_view(), name = 'peoplelist'),
+    url(r'^people/create/$', PeopleViews.PeopleCreateAPIView.as_view(), name = 'people_create'),
+    url(r'^people/(?P<pk>\w+)/$', PeopleViews.PeopleDetailAPIView.as_view(), name = 'people_detail_patch'),
+    url(r'^people/(?P<pk>\w+)/delete/$', PeopleViews.PeopleDeleteAPIView.as_view(), name = 'people_delete'),
+    
+    
+    url(r'^entryexit/$', EntryExitViews.EntryExitListAPIView.as_view(), name = 'entryexitlist'),
+    url(r'^entry/$', EntryExitViews.EntryAPIView.as_view(), name = 'entry_create_update'),
+    url(r'^exit/$', EntryExitViews.ExitAPIView.as_view(), name = 'exit_create_update'),
+
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

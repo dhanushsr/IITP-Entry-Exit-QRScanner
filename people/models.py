@@ -2,7 +2,7 @@
 from django.db import models
 
 
-# Create your models here.
+#This Model defines the table that containes the details of the peopl.
 class People(models.Model):
     id = models.CharField(max_length = 8, primary_key = True)
     name = models.CharField(max_length = 50)

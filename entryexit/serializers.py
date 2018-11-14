@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User, Group
-from django.core.exceptions import ValidationError
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, CharField, ValidationError, Serializer
 from entryexit.models import EntryExit, Building
 from people.models import People
 
-class EntryExitSerializer(serializers.ModelSerializer):
+
+class EntryExitSerializer(ModelSerializer):
     class Meta:
         model = EntryExit
         fields = ('id_name',  'entrytimestamp','exittimestamp', 'building_id')
@@ -15,14 +15,13 @@ class EntryExitSerializer(serializers.ModelSerializer):
         try:
             People.objects.get(pk = id_name)
         except People.DoesNotExist:
-            return ValidationError("The Person is not registered")
-        try:
-            Building.objects.get(pk = building_id)
-        except Building.DoesNotExist:
-            return ValidationError("The Building is not registered") 
+            raise  ValidationError("The Person is not registered")
+        b =Building.objects.filter(name= building_id)
+        if len(b)!=1:
+            raise ValidationError("The Building is not registered") 
         return data
 
-class BuildingSerializer(serializers.ModelSerializer):
+class BuildingSerializer(ModelSerializer):
     class Meta:
         model = Building
         fields = ('id',  'name')
